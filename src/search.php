@@ -33,8 +33,10 @@ $stmt = $pdo->prepare(
        FROM patient_records
       WHERE name LIKE :kw'
 );
-// Wildcards are added to the DATA, not the query string, so % and _ from the
-// user are treated as literal search characters via ESCAPE handling below.
+// The % delimiters are concatenated into the BOUND VALUE, not the SQL text, so
+// the user input can never alter the query structure (SQLi is still impossible).
+// A user-typed % or _ remains a LIKE wildcard; add an ESCAPE clause only if
+// literal-character matching is required.
 $stmt->bindValue(':kw', '%' . $keyword . '%', PDO::PARAM_STR);
 $stmt->execute();
 
